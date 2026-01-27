@@ -3,6 +3,10 @@ name: Auto Release
 on:
   push:
     branches: [main, master, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   release:
@@ -10,19 +14,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      - name: Get latest EXE name
-        id: exe
+      - name: Delete old release
         run: |
-          EXE_NAME=$(git log --all --oneline | head -1 | awk '{print $1}')
-          echo "name=journey_bot_v${EXE_NAME}.exe" >> $GITHUB_OUTPUT
+          gh release delete tool --yes || true
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN_CUSTOM }}
       
       - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
           tag_name: tool
-          release_name: Auto build - Junk Code + PyArmor + Nuitka
+          name: Auto build - Junk Code + PyArmor + Nuitka
           draft: false
           prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN_CUSTOM }}

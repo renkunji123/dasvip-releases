@@ -14,13 +14,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
+      - name: Delete old release
+        run: |
+          gh release delete tool --yes || true
         env:
-            GITHUB_TOKEN: ${{ secrets.TOKEN_CUSTOM }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN_CUSTOM }}
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
         with:
           tag_name: tool
-          release_name: Auto build - Junk Code + PyArmor + Nuitka
+          name: Auto build - Junk Code + PyArmor + Nuitka
           draft: false
           prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN_CUSTOM }}
